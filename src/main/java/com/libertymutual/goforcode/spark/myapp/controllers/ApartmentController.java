@@ -1,9 +1,14 @@
 package com.libertymutual.goforcode.spark.myapp.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.javalite.activejdbc.LazyList;
+import org.javalite.activejdbc.Model;
+
 import com.libertymutual.goforcode.spark.myapp.models.Apartment;
+import com.libertymutual.goforcode.spark.myapp.models.User;
 import com.libertymutual.goforcode.spark.myapp.utilities.AutoCloseableDb;
 import com.libertymutual.goforcode.spark.myapp.utilities.MustacheRenderer;
 
@@ -39,12 +44,24 @@ public class ApartmentController {
 			
 		apartment.saveIt();
 		res.redirect("/");
-		return "";
-				
-				
-				
-				}
-				
+		return "";		
+		}			
+	};
+	
+	
+	public static final Route index = (Request req, Response res) -> {
+		User currentUser= req.session().attribute("currentUser");
+		long id = (long) currentUser.getId();
+		try(AutoCloseableDb db = new AutoCloseableDb()) {
+			List<Apartment> apartments = Apartment.where("user_id = ?", id);
+			Map<String, Object> model = new HashMap<String, Object>();
+			model.put("apartments", apartments);
+			model.put("currentUser", req.session().attribute("currentUser"));
+			model.put("noUser", req.session().attribute("currentUser") == null);
+			return MustacheRenderer.getInstance().render("apartments/index.html", model);
+		}
+			
+	
 	};
 
 }
