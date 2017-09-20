@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>welcome to my spark {{ name }}</h1>
+
+<h2>ur rly awesome </h2>
+
+<p>{{#queryLastName }}{{ . }}{{/queryLastName}}</p>
+
+<Form method="post" action="/handlePost">
+	<input type="text" name="vodka" placeholder="vodka" required>
+	<input type="number" name="glasses" placeholder="number of glasses b4 noon" required>
+	<button>get some drinks</button>
+	</Form>
+</body>
+</html>
