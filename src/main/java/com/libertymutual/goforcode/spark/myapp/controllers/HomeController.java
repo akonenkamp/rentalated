@@ -16,7 +16,7 @@ import spark.Route;
 public class HomeController {
 	public static final Route index = (Request req, Response res) -> {
 		try(AutoCloseableDb db = new AutoCloseableDb()) {
-		List<Apartment> apartments = Apartment.findAll();
+		List<Apartment> apartments = Apartment.where("is_active = ?", true);
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("apartments", apartments);
 		model.put("currentUser", req.session().attribute("currentUser"));

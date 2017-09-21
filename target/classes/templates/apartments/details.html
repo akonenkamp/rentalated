@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>{{ apartment.address }}</title>
 </head>
 <body>
+{{> /common/_navigation }}
 <h1>only ${{ apartment.rent }}</h1>
 <p>
 {{ apartment.address }}, {{ apartment.state }} {{ apartment.zipCode }}
@@ -15,10 +16,44 @@
 	<dt>Number of Baths</dt>
 	<dd>{{ apartment.numberOfBathrooms }}</dd>
 	<dt>Sq Footage</dt>
-	<dd>{{ apartment.squareFootage }}
-	
-	
+	<dd>{{ apartment.squareFootage }}</dd>
+	<dt>Number of Likes:</dt>
+	<dd>{{ numberOfLikes }}</dd>
 </dl>
+
+{{#noUser}}
+<a href="/login?returnPath=/apartments/{{ apartment.id }}">Login to LIKE this apartment</a>
+{{/noUser}}
+
+{{#currentUser}}
+
+{{#currentUserHasLiked}}
+<form method="post" action="/apartments/{{ apartment.id }}/like">
+<button>Like this apartment</button>
+</form>
+{{/currentUserHasLiked}}
+
+{{#currentUserIsLister}}
+{{#isActive}}
+<form method="post" action="/apartments/{{ apartment.id }}/deactivations">
+<button>Deactivate listing</button>
+</form>
+{{/isActive}}
+{{#notActive}}
+<form method="post" action="/apartments/{{ apartment.id }}/activations">
+<button>Activate listing</button>
+</form>
+{{/notActive}}
+{{/currentUserIsLister}}
+
+
+{{/currentUser}}
+
+
+
+
+
+
 
 </body>
 </html>
