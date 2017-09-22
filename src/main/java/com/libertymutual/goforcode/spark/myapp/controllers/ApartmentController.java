@@ -63,6 +63,7 @@ public class ApartmentController {
 	public static final Route create = (Request req, Response res) -> {
 		User user = req.session().attribute("currentUser");
 		try(AutoCloseableDb db = new AutoCloseableDb()) {
+		if (user != null) {
 		Apartment apartment = new Apartment (
 				Integer.parseInt(req.queryParams("rent")),
 				Integer.parseInt(req.queryParams("number_of_bedrooms")),
@@ -72,13 +73,18 @@ public class ApartmentController {
 				req.queryParams("city"),
 				req.queryParams("state"),
 				req.queryParams("zip_code"),
-				true
+				true 
 				);
 		user.add(apartment);
 		apartment.saveIt();
 		res.redirect("/");
 		return "";		
-		}			
+		}
+		else {
+			res.status(403);
+			return "";
+		}
+		} 
 	};
 	
 	
@@ -103,33 +109,64 @@ public class ApartmentController {
 		try (AutoCloseableDb db = new AutoCloseableDb()) {
 		Apartment apartment = Apartment.findById(id);
 		User user = req.session().attribute("currentUser");
+		if (user != null) {
 		apartment.add(user);
 		apartment.saveIt();
 		user.saveIt();
 		res.redirect("/apartments/" + id);
-		return "";
+		return ""; 
+		} else {
+		 res.status(403);
+		 return "";
+		}
+		
 		}
 	};
 	
 	public static final Route deactivate = (Request req, Response res) -> {
 		long id = Long.parseLong(req.params("id"));
+		User currentUser = req.session().attribute("currentUser");
 		try (AutoCloseableDb db = new AutoCloseableDb()) {
 			Apartment apartment = Apartment.findById(id);
-			apartment.setIsActive(false);
-			apartment.saveIt();
-			res.redirect("/apartments/" + id);
-			return "";
+			User lister = apartment.parent(User.class);
+			if (currentUser != null) {
+				if (currentUser.getId()== lister.getId()) {
+					apartment.setIsActive(false);
+					apartment.saveIt();
+					res.redirect("/apartments/" + id);
+					return "";
+				
+			} else {
+				res.status(403);
+				return "";
+			}
+
 		}
+			return "";
+	}
 	};
+	
 	public static final Route activate = (Request req, Response res) -> {
 		long id = Long.parseLong(req.params("id"));
+		User currentUser = req.session().attribute("currentUser");
 		try (AutoCloseableDb db = new AutoCloseableDb()) {
 			Apartment apartment = Apartment.findById(id);
-			apartment.setIsActive(true);
-			apartment.saveIt();
-			res.redirect("/apartments/" + id);
-			return "";
+			User lister = apartment.parent(User.class);
+			if (currentUser != null) {
+				if (currentUser.getId()== lister.getId()) {
+					apartment.setIsActive(true);
+					apartment.saveIt();
+					res.redirect("/apartments/" + id);
+					return "";
+				
+			} else {
+				res.status(403);
+				return "";
+			}
+
 		}
+			return "";
+	}
 	};
 		
 			
