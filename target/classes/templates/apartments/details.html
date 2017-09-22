@@ -34,6 +34,9 @@
 {{/currentUserHasLiked}}
 
 {{#currentUserIsLister}}
+{{#listOfLikers}}
+<div>{{ firstName }} {{ lastName }}</div>
+{{/listOfLikers}}
 {{#isActive}}
 <form method="post" action="/apartments/{{ apartment.id }}/deactivations">
 <button>Deactivate listing</button>
@@ -44,6 +47,7 @@
 <button>Activate listing</button>
 </form>
 {{/notActive}}
+
 {{/currentUserIsLister}}
 
 

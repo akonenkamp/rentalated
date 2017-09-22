@@ -48,6 +48,7 @@ public class ApartmentController {
 		model.put("isActive", apartment.getIsActive());
 		model.put("notActive", !apartment.getIsActive());
 		model.put("currentUserHasLiked", !currentUserHasLiked && !currentUserIsLister);
+		model.put("listOfLikers", likers);
 		return MustacheRenderer.getInstance().render("apartments/details.html", model);
 		}
 	};
