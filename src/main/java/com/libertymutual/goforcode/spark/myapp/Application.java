@@ -14,6 +14,7 @@ import com.github.mustachejava.Mustache;
 import com.libertymutual.goforcode.spark.myapp.controllers.ApartmentApiController;
 import com.libertymutual.goforcode.spark.myapp.controllers.ApartmentController;
 import com.libertymutual.goforcode.spark.myapp.controllers.HomeController;
+import com.libertymutual.goforcode.spark.myapp.controllers.SessionApiController;
 import com.libertymutual.goforcode.spark.myapp.controllers.SessionController;
 import com.libertymutual.goforcode.spark.myapp.controllers.UserApiController;
 import com.libertymutual.goforcode.spark.myapp.controllers.UserController;
@@ -48,7 +49,10 @@ public class Application {
 			// "87654").save();
 			Base.close();
 		}
-
+		
+		enableCORS("http://localhost:4200", "*", "*");
+		
+	
 		path("/apartments", () -> {
 			before("/new", SecurityFilters.isAuthenticated);
 
@@ -70,10 +74,54 @@ public class Application {
 		post("/logout", SessionController.destroy);
 
 		path("/api", () -> {
+			get("/apartments/mine", ApartmentApiController.myListings);
 			get("/apartments/:id", ApartmentApiController.details);
 			post("/apartments", ApartmentApiController.create);
 			post("/users", UserApiController.create);
+			get("/apartments", ApartmentApiController.index);	
+			post("/sessions", SessionApiController.create);
+			delete("/sessions/mine", SessionApiController.destroy);
 
 		});
+	}
+		
+		
+	
+	private static void enableCORS(final String origin, final String methods, final String headers) {
+
+	    options("/*", (request, response) -> {
+
+	        String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+	        if (accessControlRequestHeaders != null) {
+	            response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+	        }
+
+	        String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+	        if (accessControlRequestMethod != null) {
+	            response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+	        }
+
+	        return "OK";
+	    });
+	    
+	    before((request, response) -> {
+
+	    	   response.header("Access-Control-Allow-Origin", origin);
+
+	    	   response.header("Access-Control-Request-Method", methods);
+
+	    	   response.header("Access-Control-Allow-Headers", headers);
+
+	    	   response.header("Access-Control-Allow-Credentials", "true");
+
+	    	});
+
+//	    before((request, response) -> {
+////	        response.header("Access-Control-Allow-Origin", origin);
+////	        response.header("Access-Control-Request-Method", methods);
+////	        response.header("Access-Control-Allow-Headers", headers);
+////	        // Note: this may or may not be necessary in your particular application
+////	        response.type("application/json");
+//	    });
 	}
 }

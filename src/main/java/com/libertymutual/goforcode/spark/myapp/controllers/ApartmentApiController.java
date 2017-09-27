@@ -1,15 +1,22 @@
 package com.libertymutual.goforcode.spark.myapp.controllers;
 
 import com.libertymutual.goforcode.spark.myapp.models.Apartment;
+import com.libertymutual.goforcode.spark.myapp.models.User;
 import com.libertymutual.goforcode.spark.myapp.utilities.AutoCloseableDb;
 import com.libertymutual.goforcode.spark.myapp.utilities.JsonHelper;
+import com.libertymutual.goforcode.spark.myapp.utilities.MustacheRenderer;
 
 import spark.Response;
 import spark.Request;
 import spark.Route;
 import static spark.Spark.notFound;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.javalite.activejdbc.LazyList;
 
 public class ApartmentApiController {
 	
@@ -38,9 +45,31 @@ public class ApartmentApiController {
 			res.status(201);
 			return apartment.toJson(true);
 		}
-		
 	};
 	
-	
+    public static final Route index = (Request req, Response res) -> {
+
+        try (AutoCloseableDb db = new AutoCloseableDb()) {
+
+            LazyList<Apartment> apartments = Apartment.where("is_active = ?", true);
+            res.header("Content-Type", "application/json");
+
+            return apartments.toJson(true);
+
+        }
+
+    };	
+    public static final Route myListings = (Request req, Response res) -> {
+    	User currentUser = req.session().attribute("currentUser");
+        try (AutoCloseableDb db = new AutoCloseableDb()) {
+
+            LazyList<Apartment> apartments = currentUser.getAll(Apartment.class);
+            res.header("Content-Type", "application/json");
+
+            return apartments.toJson(true);
+
+        }
+
+    };	
 
 }
